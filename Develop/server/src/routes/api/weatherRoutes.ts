@@ -5,10 +5,12 @@ import HistoryService from '../../service/historyService.js';
 import WeatherService from '../../service/weatherService.js';
 
 // TODO: POST Request with city name to retrieve weather data
-router.post('/', (req: Request, res: Response) => {
+router.post('/', async (req: Request, res: Response) => {
   // TODO: GET weather data from city name
   const city = req.body.city;
-  return city;
+  const weather = new WeatherService(city);
+  const response = await WeatherService.getWeatherForCity(city);
+  return response;
 });
 // TODO: GET search history
 router.get('/history', async (req: Request, res: Response) => {
