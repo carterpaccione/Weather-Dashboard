@@ -15,6 +15,7 @@ interface Coordinates {
 // TODO: Define a class for the Weather object
 
 class Weather {
+  city: string;
   date: string;
   icon: string;
   iconDescription: string;
@@ -22,7 +23,8 @@ class Weather {
   windSpeed: number;
   humidity: number;
 
-  constructor(date: string, icon: string, iconDescription: string, tempF: number, windSpeed: number, humidity: number) {
+  constructor(city: string, date: string, icon: string, iconDescription: string, tempF: number, windSpeed: number, humidity: number) {
+    this.city = city;
     this.date = date;
     this.icon = icon;
     this.iconDescription = iconDescription;
@@ -39,7 +41,7 @@ class WeatherService {
   
   private baseUrl?: string;
   private apiKey?: string;
-  // private cityName: string = "";
+  private cityName: string = '';
 
   constructor() {
     this.baseUrl = BASE_API_URL || "";
@@ -95,6 +97,7 @@ class WeatherService {
     const data = await this.destructureLocationData(locationData);
     return data;
   }
+
 // TODO: Create fetchWeatherData method
 
   private async fetchWeatherData(coordinates: Coordinates) {
@@ -104,11 +107,13 @@ class WeatherService {
     // console.log('Weather data:', weatherData);
     return weatherData;
   }
+
 // TODO: Build parseCurrentWeather method
 
   private parseCurrentWeather(response: any) {
   const currentWeather = new Weather(
-    response.list[0].dt,
+    this.cityName,
+    new Date(response.list[0].dt * 1000).toDateString(),
     response.list[0].weather[0].icon,
     response.list[0].weather[0].description,
     response.list[0].main.temp / 4,
@@ -126,7 +131,8 @@ class WeatherService {
     
     for(let i = 8; i < weatherData.length; i+=8) {
       const forecastWeather = new Weather(
-        weatherData[i].dt,
+        this.cityName,
+        new Date(weatherData[i].dt * 1000).toDateString(),
         weatherData[i].weather[0].icon,
         weatherData[i].weather[0].description,
         weatherData[i].main.temp / 4,
@@ -142,6 +148,8 @@ class WeatherService {
 // TODO: Complete getWeatherForCity method // Get lat and lon by city; Get forecast by lat and lon; Parse current weather; Build forecast array
 
   async getWeatherForCity(city: string) {
+    this.cityName = city;
+
     if(!city) {
       throw new Error('No city provided');
     }
