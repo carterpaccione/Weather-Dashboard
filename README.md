@@ -16,8 +16,11 @@ In this application, the user can input the name of a city and recieve the weath
 ## Installation
 
 Note: The user will need an openweathermap.org api key.
+
 Create a .env file within the server folder with these two variables:
+
 BASE_API_URL=https://api.openweathermap.org
+
 API_KEY={yourAPIkey}
 
 In a terminal within the Develop folder, run npm install to install the necesary dependencies for the app, then npm run start to deploy it locally.
