@@ -11,15 +11,18 @@ router.post('/', async (req: Request, res: Response) => {
     console.log(req.body);
     const city = req.body.cityName;
     const weather = await WeatherService.getWeatherForCity(city);
+    await HistoryService.addCity(city);
     res.json(weather)
   } catch (err) {
     console.log(err);
   }
 });
+
 // TODO: GET search history
 router.get('/history', async (_req: Request, res: Response) => {
   try {
     const history = await HistoryService.getCities();
+    console.log(history);
     res.json(history);
   } catch (err) {
     console.log(err);
