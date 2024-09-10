@@ -1,10 +1,11 @@
 import fs from 'node:fs/promises';
+import { v4 as uuidv4 } from 'uuid';
 
 // TODO: Define a City class with name and id properties
 class City {
   name: string;
-  id: string;
-  constructor(name: string, id: string) {
+  id: any;
+  constructor(name: string, id: any) {
     this.name = name;
     this.id = id;
   }
@@ -15,24 +16,28 @@ class HistoryService {
    private async read() {
     return await fs.readFile('db/searchHistory.json', 'utf8');
    }
+  
   // TODO: Define a write method that writes the updated cities array to the searchHistory.json file
    private async write(cities: City[]) {
     return await fs.writeFile('db/searchHistory.json', JSON.stringify(cities, null, `\t`));
    }
-  // TODO: Define a getCities method that reads the cities from the searchHistory.json file and returns them as an array of City objects
+  
+   // TODO: Define a getCities method that reads the cities from the searchHistory.json file and returns them as an array of City objects
   async getCities() {
       return await this.read().then ((cities) => {
         let parsedCities: City[];
   
         try {
           parsedCities = [].concat(JSON.parse(cities));
+          console.log(parsedCities);
         } catch (error) {
           parsedCities = [];
         }
-  
+        console.log(parsedCities);
         return parsedCities; 
       });
   }
+  
   // TODO Define an addCity method that adds a city to the searchHistory.json file
   async addCity(city: string) {
     if(!city) {
@@ -40,17 +45,20 @@ class HistoryService {
     }
       const newCity: City = {
         name: city,
-        id: Math.random().toString(36).substr(2, 9) // generate a random id??
+        id: uuidv4(), // Generate a unique ID using uuid,
       };
+      console.log(newCity);
       return await this.getCities()
         .then((cities) => {
-          if(cities.findIndex((index) => index.name === city)) {
-            return cities;
+          for(let i = 0; i < cities.length; i++) {
+            if (cities[i].name === city) {
+              throw new Error('City already exists');
+            } 
           }
-          return [...cities, newCity];
-        })
-        .then((updatedCities) => this.write(updatedCities))
-        .then(() => newCity);
+          let updatedCities = cities.concat(newCity);
+          console.log(updatedCities);
+          return this.write(updatedCities);
+        });
   }
   // * BONUS TODO: Define a removeCity method that removes a city from the searchHistory.json file
    async removeCity(id: string) {
